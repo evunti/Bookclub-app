@@ -1,4 +1,9 @@
 import { useState, useEffect } from "react";
+import { Provider } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "./store";
+import store from "./store";
+import { addBookItem, updateBookItem, deleteBookItem } from "./itemsSlice";
 
 interface Book {
   id: number;
@@ -74,7 +79,7 @@ export default function BookForm({
           >
             X
           </button>
-          <button type="submit">
+          <button type="submit" onClick={() => dispatch(addBookItem())}>
             {initialData ? "Update Book" : "Submit"}
           </button>
         </div>

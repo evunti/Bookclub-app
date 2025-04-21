@@ -59,10 +59,10 @@ export default function BookItem({
               </div>
             </div>
           </div>
-          <div className="decriptionDivItem">
+          <div>
             <p>{book.author}</p>
           </div>
-          <div className="dateItemDiv">
+          <div>
             <p>{book.pages}</p>
           </div>
         </div>

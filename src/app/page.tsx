@@ -1,8 +1,14 @@
 "use client";
 import { useState } from "react";
+// import { Provider } from "react-redux";
+// import { useSelector, useDispatch } from "react-redux";
+// import { RootState, AppDispatch } from "./store";
+// import store from "./store";
+// import { addBookItem, updateBookItem, deleteBookItem } from "./itemsSlice";
 
 import BookForm from "./components/form";
 import BookItem from "./components/item";
+import { deleteBookItem } from "./itemsSlice";
 
 interface Book {
   id: number;
@@ -11,6 +17,16 @@ interface Book {
   pages: number;
   // url: string;
 }
+function CreateBookItem() {
+  const dispatch = useDispatch<AppDispatch>();
+  const BookItmes = useSelector(
+    (state: RootState) => state.books.BookItmes
+  );
+
+  const handleDeleteBook = (ndex: number) => {
+    dispatch(deleteBookItem({ index }));
+  };
+
 export default function AddBook() {
   const [books, setBooks] = useState<Book[]>([]);
   const [editBook, setEditBook] = useState<Book | null>(null);
