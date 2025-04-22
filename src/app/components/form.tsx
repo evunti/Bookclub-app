@@ -79,7 +79,13 @@ export default function BookForm({
           >
             X
           </button>
-          <button type="submit" onClick={() => useDispatch(addBookItem())}>
+          <button
+            type="submit"
+            onClick={() => {
+              const dispatch = useDispatch<AppDispatch>();
+              dispatch(addBookItem());
+            }}
+          >
             {initialData ? "Update Book" : "Submit"}
           </button>
         </div>

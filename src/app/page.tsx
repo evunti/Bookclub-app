@@ -17,10 +17,10 @@ interface Book {
 }
 function CreateBookItem() {
   const dispatch = useDispatch<AppDispatch>();
-  const BookItmes = useSelector((state: RootState) => state.books.BookItmes);
+  const BookItmes = useSelector((state: RootState) => state.items.allBookItems);
 
   const handleDeleteBook = (index: number) => {
-    dispatch(deleteBookItem({ index }));
+    dispatch(deleteBookItem(index));
   };
 }
 
