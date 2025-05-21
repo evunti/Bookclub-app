@@ -77,7 +77,6 @@ export default function AddBook() {
         </div>
         <div className="flex flex-col items-center gap-10 mb-20 text-xl mt-20">
           <p>Some Books We've Read.</p>
-          {/* Book list with info and image side by side */}
           <div className="flex flex-col gap-8 w-full max-w-3xl">
             {[
               {
@@ -132,7 +131,7 @@ export default function AddBook() {
               </div>
             ))}
           </div>
-          {/* End book list */}
+
           <button
             className=""
             type="button"
