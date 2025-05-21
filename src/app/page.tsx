@@ -77,26 +77,62 @@ export default function AddBook() {
         </div>
         <div className="flex flex-col items-center gap-10 mb-20 text-xl mt-20">
           <p>Some Books We've Read.</p>
-          <div className=" grid mx-auto mb-[10%] grid-cols-3 ">
-            <img
-              className="p-2"
-              src="/src/app/images/I'm glad.jpeg"
-              id="book 1"
-            />
-
-            <img
-              className="p-2"
-              src="./images/all the lovers.jpeg"
-              id="book 2"
-            />
-            <img className="p-2" src="./images/educated.jpeg" id="book 3" />
-            <img
-              className="p-2"
-              src="./images/Hitchhiker's guide.jpeg"
-              id="book 4"
-            />
-            <img className="p-2" src="./images/persuasion.jpeg" id="book 5" />
+          {/* Book list with info and image side by side */}
+          <div className="flex flex-col gap-8 w-full max-w-3xl">
+            {[
+              {
+                title: "I'm Glad My Mom Died",
+                author: "Jennette McCurdy",
+                pages: 320,
+                image: "/src/app/images/I'm glad.jpeg",
+              },
+              {
+                title: "All the Lovers in the Night",
+                author: "Mieko Kawakami",
+                pages: 224,
+                image: "/src/app/images/all the lovers.jpeg",
+              },
+              {
+                title: "Educated",
+                author: "Tara Westover",
+                pages: 352,
+                image: "/src/app/images/educated.jpeg",
+              },
+              {
+                title: "The Hitchhiker's Guide to the Galaxy",
+                author: "Douglas Adams",
+                pages: 224,
+                image: "/src/app/images/Hitchhiker's guide.jpeg",
+              },
+              {
+                title: "Persuasion",
+                author: "Jane Austen",
+                pages: 279,
+                image: "/src/app/images/persuasion.jpeg",
+              },
+            ].map((book, idx) => (
+              <div
+                key={idx}
+                className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-4"
+              >
+                <div className="flex flex-col">
+                  <span className="font-semibold">{book.title}</span>
+                  <span className="text-sm text-gray-600">
+                    by {book.author}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {book.pages} pages
+                  </span>
+                </div>
+                <img
+                  className="w-24 h-32 object-cover rounded-md ml-6"
+                  src={book.image}
+                  alt={book.title}
+                />
+              </div>
+            ))}
           </div>
+          {/* End book list */}
           <button
             className=""
             type="button"
