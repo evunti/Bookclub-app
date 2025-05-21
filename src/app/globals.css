@@ -25,7 +25,10 @@
 }
 
 #hero {
-  background-image: url(./images/hero\ background.jpg);
+  /* background-image: url(/images/hero\ background.jpg); */
+  border: 2px solid #4a714a;
+  border-radius: 8px;
+  margin: auto 5px;
 }
 
 @media only screen and (max-width: 800px) {
@@ -36,6 +39,6 @@
 }
 @media only screen and (max-width: 620px) and (max-height: 900px) {
   #hero {
-    background-image: url(./images/hero\ background.jpg);
+    /* background-image: url(/images/hero\ background.jpg); */
   }
 }

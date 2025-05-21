@@ -84,31 +84,31 @@ export default function AddBook() {
                 title: "I'm Glad My Mom Died",
                 author: "Jennette McCurdy",
                 pages: 320,
-                image: "/src/app/images/I'm glad.jpeg",
+                image: "/images/I'm glad.jpeg",
               },
               {
                 title: "All the Lovers in the Night",
                 author: "Mieko Kawakami",
                 pages: 224,
-                image: "/src/app/images/all the lovers.jpeg",
+                image: "/images/all the lovers.jpeg",
               },
               {
                 title: "Educated",
                 author: "Tara Westover",
                 pages: 352,
-                image: "/src/app/images/educated.jpeg",
+                image: "/images/educated.jpeg",
               },
               {
                 title: "The Hitchhiker's Guide to the Galaxy",
                 author: "Douglas Adams",
                 pages: 224,
-                image: "/src/app/images/Hitchhiker's guide.jpeg",
+                image: "/images/Hitchhiker's guide.jpeg",
               },
               {
                 title: "Persuasion",
                 author: "Jane Austen",
                 pages: 279,
-                image: "/src/app/images/persuasion.jpeg",
+                image: "/images/persuasion.jpeg",
               },
             ].map((book, idx) => (
               <div
