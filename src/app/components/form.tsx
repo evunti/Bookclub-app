@@ -41,7 +41,10 @@ export default function BookForm({
   };
   return (
     <div className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-2 w-full max-w-md">
-      <form className="flex-1 flex flex-col gap-2 relative" onSubmit={handleSubmit}>
+      <form
+        className="flex-1 flex flex-col gap-2 relative"
+        onSubmit={handleSubmit}
+      >
         <input
           type="text"
           value={title}
