@@ -29,6 +29,7 @@
   border: 2px solid #4a714a;
   border-radius: 8px;
   margin: auto 5px;
+  background-color: white;
 }
 
 @media only screen and (max-width: 800px) {
