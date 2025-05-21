@@ -152,7 +152,11 @@ export default function AddBook() {
         <div className="flex flex-col items-center">
           <p>Contact Us</p>
           <p className="text-sm">Please Don't.</p>
-          <img className="p-2" src=".src/app/images/groupme.jpg" />
+          <img
+            className="p-2 rounded-2xl w-12 h-12 object-cover"
+            src="/images/groupme.jpg"
+            alt="GroupMe"
+          />
         </div>
       </div>
     </div>
