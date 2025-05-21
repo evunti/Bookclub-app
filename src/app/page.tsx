@@ -150,7 +150,7 @@ export default function AddBook() {
           )}
         </div>
         <div className="flex flex-col items-center">
-          <p>Contact Us</p>
+          <p id="contact"> Contact Us</p>
           <p className="text-sm">Please Don't.</p>
           <img
             className="p-2 rounded-2xl w-12 h-12 object-cover"
