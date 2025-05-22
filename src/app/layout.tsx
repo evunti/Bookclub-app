@@ -15,12 +15,12 @@ export default function RootLayout({
           <a className="no-underline font-bold p-2" href="#books">
             Books
           </a>
-          <a
+          {/* <a
             className="no-underline font-bold p-2"
-            href="https://docs.google.com/spreadsheets/d/1kHmzodxrGFzg5kxeySfrx7rixHIJsCOxClitApXHifI/edit?gid=0#gid=0"
+            // href="https:/docs.google.com/spreadsheets/d/1kHmzodxrGFzg5kxeySfrx7rixHIJsCOxClitApXHifI/edit?gid=0#gid=0"
           >
             Book Recs
-          </a>
+          </a> */}
           <a className="no-underline font-bold p-2" href="#contact">
             Contact
           </a>

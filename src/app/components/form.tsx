@@ -40,51 +40,45 @@ export default function BookForm({
     onSubmit(formData);
   };
   return (
-    <div>
+    <div className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-2 w-full max-w-md">
       <form
-        className="w-[600px] h-[300px] flex rounded-[10px] shadow-xl bg-gradient-to-r from-emarld-100 to-white border border-emarld-300"
+        className="flex-1 flex flex-col gap-2 relative"
         onSubmit={handleSubmit}
       >
-        <div className="w-1/2 p-6 flex flex-col justify-between border-r border-emerald-400 bg-emerald-200 rounded-l-[10px]">
-          <div>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
-              required
-            />
-
-            <input
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Author"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="number"
-              value={pages}
-              onChange={(e) => setPages(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <div className="w-1/2 p-6 flex flex-col justify-between bg-white rounded-r-[10px]">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          required
+          className="mb-1 p-1 border rounded text-sm"
+        />
+        <input
+          type="text"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          placeholder="Author"
+          required
+          className="mb-1 p-1 border rounded text-sm"
+        />
+        <input
+          type="number"
+          value={pages}
+          onChange={(e) => setPages(Number(e.target.value))}
+          placeholder="Pages"
+          className="mb-1 p-1 border rounded text-sm w-20"
+        />
+        <div className="flex gap-2 mt-1 justify-end absolute right-0 bottom-0">
           <button
-            className=" flex justify-end"
             type="button"
             onClick={onCancel}
+            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
           >
-            X
+            Cancel
           </button>
           <button
             type="submit"
-            onClick={() => {
-              const dispatch = useDispatch<AppDispatch>();
-              dispatch(addBookItem());
-            }}
+            className="px-2 py-1 bg-emerald-400 text-white rounded hover:bg-emerald-500 text-sm"
           >
             {initialData ? "Update Book" : "Submit"}
           </button>
