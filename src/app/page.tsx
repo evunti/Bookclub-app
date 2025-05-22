@@ -5,16 +5,36 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "./store";
 import store from "./store";
 import { addBookItem, updateBookItem, deleteBookItem } from "./itemsSlice";
+import { v4 as uuidv4 } from "uuid";
 
 import BookForm from "./components/form";
 
 interface Book {
-  id: number;
+  id: string;
   title: string;
   author: string;
   pages: number;
   // url: string;
 }
+
+const fetchCoverUrl = async (
+  title: string,
+  author: string
+): Promise<string | null> => {
+  try {
+    const response = await fetch(
+      `https://bookcover.longitood.com/bookcover?book_title=${encodeURIComponent(
+        title
+      )}&author_name=${encodeURIComponent(author)}`
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.url || null;
+  } catch (error) {
+    return null;
+  }
+};
+
 function CreateBookItem() {
   const dispatch = useDispatch<AppDispatch>();
   const BookItmes = useSelector((state: RootState) => state.items.allBookItems);
@@ -28,6 +48,7 @@ export default function AddBook() {
   const [books, setBooks] = useState<Book[]>([]);
   const [editBook, setEditBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
+  const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
 
   const handleFormSubmit = (data: Omit<Book, "id">) => {
     if (editBook) {
@@ -38,7 +59,7 @@ export default function AddBook() {
       );
       setEditBook(null);
     } else {
-      const newBook: Book = { id: Date.now(), ...data };
+      const newBook: Book = { id: uuidv4(), ...data };
       setBooks((prevBooks) => [...prevBooks, newBook]);
     }
     setShowBookForm(false);
@@ -48,11 +69,11 @@ export default function AddBook() {
     setShowBookForm(false);
   };
 
-  const handleDeleteBook = (id: number) => {
+  const handleDeleteBook = (id: string) => {
     setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
   };
 
-  const handleEditBook = (id: number) => {
+  const handleEditBook = (id: string) => {
     const bookToEdit = books.find((book) => book.id === id);
     if (bookToEdit) {
       setEditBook(bookToEdit);
@@ -70,6 +91,24 @@ export default function AddBook() {
   useEffect(() => {
     fetchBooks();
   }, []);
+
+  useEffect(() => {
+    const fetchAllCovers = async () => {
+      const entries = await Promise.all(
+        books.map(async (book) => {
+          const url = await fetchCoverUrl(book.title, book.author);
+          return [book.id, url] as [string, string | null];
+        })
+      );
+      setCoverUrls(
+        Object.fromEntries(
+          entries.filter(([, url]) => url !== null) as [string, string][]
+        )
+      );
+    };
+    if (books.length > 0) fetchAllCovers();
+  }, [books]);
+
   return (
     <div>
       <div>
@@ -91,7 +130,7 @@ export default function AddBook() {
           <div className="flex flex-col gap-8 w-full max-w-3xl">
             {books.map((book, idx) => (
               <div
-                key={idx}
+                key={book.id}
                 className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-4"
               >
                 <div className="flex flex-col">
@@ -105,7 +144,7 @@ export default function AddBook() {
                 </div>
                 <img
                   className="w-24 h-32 object-cover rounded-md ml-6"
-                  src={book.image}
+                  src={coverUrls[book.id] || "/images/placeholder.jpg"}
                   alt={book.title}
                 />
               </div>
