@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "./store";
@@ -60,6 +60,16 @@ export default function AddBook() {
     }
   };
 
+  const fetchBooks = () => {
+    fetch("http://localhost:8000/")
+      .then((response) => response.json())
+      .then((data) => setBooks(data))
+      .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
   return (
     <div>
       <div>
@@ -75,41 +85,11 @@ export default function AddBook() {
             <p>We meet monthly.</p>
           </div>
         </div>
+
         <div className="flex flex-col items-center gap-10 mb-20 text-xl mt-20">
-          <p>Some Books We've Read.</p>
+          <p> Books We've Read.</p>
           <div className="flex flex-col gap-8 w-full max-w-3xl">
-            {[
-              {
-                title: "I'm Glad My Mom Died",
-                author: "Jennette McCurdy",
-                pages: 320,
-                image: "/images/I'm glad.jpeg",
-              },
-              {
-                title: "All the Lovers in the Night",
-                author: "Mieko Kawakami",
-                pages: 224,
-                image: "/images/all the lovers.jpeg",
-              },
-              {
-                title: "Educated",
-                author: "Tara Westover",
-                pages: 352,
-                image: "/images/educated.jpeg",
-              },
-              {
-                title: "The Hitchhiker's Guide to the Galaxy",
-                author: "Douglas Adams",
-                pages: 224,
-                image: "/images/Hitchhiker's guide.jpeg",
-              },
-              {
-                title: "Persuasion",
-                author: "Jane Austen",
-                pages: 279,
-                image: "/images/persuasion.jpeg",
-              },
-            ].map((book, idx) => (
+            {books.map((book, idx) => (
               <div
                 key={idx}
                 className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-4"
