@@ -128,7 +128,7 @@ export default function AddBook() {
         <div className="flex flex-col items-center gap-10 mb-20 text-xl mt-20">
           <p> Books We've Read.</p>
           <div className="flex flex-col gap-8 w-full max-w-3xl">
-            {books.map((book, idx) => (
+            {books.map((book, id) => (
               <div
                 key={book.id}
                 className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-4"
