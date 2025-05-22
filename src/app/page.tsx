@@ -142,11 +142,13 @@ export default function AddBook() {
                     {book.pages} pages
                   </span>
                 </div>
-                <img
-                  className="w-24 h-32 object-cover rounded-md ml-6"
-                  src={coverUrls[book.id] || "/images/placeholder.jpg"}
-                  alt={book.title}
-                />
+                <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
+                  <img
+                    className="object-contain w-full h-full "
+                    src={coverUrls[book.id] || "/images/placeholder.jpg"}
+                    alt={book.title}
+                  />
+                </div>
               </div>
             ))}
           </div>
