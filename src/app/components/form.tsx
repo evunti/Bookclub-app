@@ -63,7 +63,7 @@ export default function BookForm({
         />
         <input
           type="number"
-          value={pages}
+          value={pages === 0 ? "" : pages}
           onChange={(e) => setPages(Number(e.target.value))}
           placeholder="Pages"
           className="mb-1 p-1 border rounded text-sm w-20"

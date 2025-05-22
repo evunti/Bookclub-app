@@ -7,6 +7,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        ></script>
+      </head>
       <body>
         <nav className="p-2 flex justify-end">
           <a className="no-underline font-bold p-2" href="#hero">
