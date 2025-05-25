@@ -50,8 +50,17 @@ export default function AddBook() {
   const [showBookForm, setShowBookForm] = useState(false);
   const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
 
-  const handleFormSubmit = (data: Omit<Book, "id">) => {
+  const handleFormSubmit = async (data: Omit<Book, "id">) => {
     if (editBook) {
+      try {
+        await fetch(`http://localhost:8000/${editBook.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data }),
+        });
+      } catch (error) {
+        console.error("Failed to update book in DB", error);
+      }
       setBooks((prevBooks) =>
         prevBooks.map((book) =>
           book.id === editBook.id ? { ...book, ...data } : book
@@ -59,7 +68,22 @@ export default function AddBook() {
       );
       setEditBook(null);
     } else {
-      const newBook: Book = { id: uuidv4(), ...data };
+      // Add to DB
+      let newBook: Book = { id: uuidv4(), ...data };
+      try {
+        const response = await fetch("http://localhost:8000/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newBook),
+        });
+        if (response.ok) {
+          // Optionally, get the new book from the response
+          const saved = await response.json();
+          newBook = saved.id ? saved : newBook;
+        }
+      } catch (error) {
+        console.error("Failed to add book to DB", error);
+      }
       setBooks((prevBooks) => [...prevBooks, newBook]);
     }
     setShowBookForm(false);
@@ -69,8 +93,15 @@ export default function AddBook() {
     setShowBookForm(false);
   };
 
-  const handleDeleteBook = (id: string) => {
+  const handleDeleteBook = async (id: string) => {
     setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+    try {
+      await fetch(`http://localhost:8000/${id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Failed to delete book from DB");
+    }
   };
 
   const handleEditBook = (id: string) => {
@@ -141,6 +172,24 @@ export default function AddBook() {
                   <span className="text-xs text-gray-500">
                     {book.pages} pages
                   </span>
+                  {/* comment out when no in use */}
+                  <div>
+                    <button
+                      className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
+                      type="button"
+                      onClick={() => handleDeleteBook(book.id)}
+                    >
+                      Delete
+                    </button>
+                    <span className="inline-block w-1"></span>
+                    <button
+                      className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
+                      type="button"
+                      onClick={() => handleEditBook(book.id)}
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
