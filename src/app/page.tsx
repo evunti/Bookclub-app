@@ -172,6 +172,7 @@ export default function AddBook() {
                   <span className="text-xs text-gray-500">
                     {book.pages} pages
                   </span>
+                  {/* comment out when no in use */}
                   <div>
                     <button
                       className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
