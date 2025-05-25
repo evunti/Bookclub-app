@@ -50,8 +50,17 @@ export default function AddBook() {
   const [showBookForm, setShowBookForm] = useState(false);
   const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
 
-  const handleFormSubmit = (data: Omit<Book, "id">) => {
+  const handleFormSubmit = async (data: Omit<Book, "id">) => {
     if (editBook) {
+      try {
+        await fetch(`http://localhost:8000/${editBook.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data }),
+        });
+      } catch (error) {
+        console.error("Failed to update book in DB", error);
+      }
       setBooks((prevBooks) =>
         prevBooks.map((book) =>
           book.id === editBook.id ? { ...book, ...data } : book
@@ -59,7 +68,22 @@ export default function AddBook() {
       );
       setEditBook(null);
     } else {
-      const newBook: Book = { id: uuidv4(), ...data };
+      // Add to DB
+      let newBook: Book = { id: uuidv4(), ...data };
+      try {
+        const response = await fetch("http://localhost:8000/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newBook),
+        });
+        if (response.ok) {
+          // Optionally, get the new book from the response
+          const saved = await response.json();
+          newBook = saved.id ? saved : newBook;
+        }
+      } catch (error) {
+        console.error("Failed to add book to DB", error);
+      }
       setBooks((prevBooks) => [...prevBooks, newBook]);
     }
     setShowBookForm(false);
