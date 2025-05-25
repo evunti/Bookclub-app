@@ -69,8 +69,15 @@ export default function AddBook() {
     setShowBookForm(false);
   };
 
-  const handleDeleteBook = (id: string) => {
+  const handleDeleteBook = async (id: string) => {
     setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+    try {
+      await fetch(`http://localhost:8000/${id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Failed to delete book from DB");
+    }
   };
 
   const handleEditBook = (id: string) => {
@@ -141,6 +148,23 @@ export default function AddBook() {
                   <span className="text-xs text-gray-500">
                     {book.pages} pages
                   </span>
+                  <div>
+                    <button
+                      className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
+                      type="button"
+                      onClick={() => handleDeleteBook(book.id)}
+                    >
+                      Delete
+                    </button>
+                    <span className="inline-block w-1"></span>
+                    <button
+                      className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
+                      type="button"
+                      onClick={() => handleEditBook(book.id)}
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
