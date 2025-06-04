@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "./store";
@@ -8,6 +8,7 @@ import { addBookItem, updateBookItem, deleteBookItem } from "./itemsSlice";
 import { v4 as uuidv4 } from "uuid";
 
 import BookForm from "./components/form";
+import { AdminContext } from "./layout";
 
 interface Book {
   id: string;
@@ -49,6 +50,7 @@ export default function AddBook() {
   const [editBook, setEditBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
   const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
+  const isAdmin = useContext(AdminContext);
 
   const handleFormSubmit = async (data: Omit<Book, "id">) => {
     if (editBook) {
@@ -182,7 +184,27 @@ export default function AddBook() {
                   <span className="text-xs text-gray-500">
                     {book.pages} pages
                   </span>
-                  {/* comment out when not in use */}
+
+                  {isAdmin && (
+                    <div>
+                      <button
+                        className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
+                        type="button"
+                        onClick={() => handleDeleteBook(book.id)}
+                      >
+                        Delete
+                      </button>
+                      <span className="inline-block w-1"></span>
+                      <button
+                        className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
+                        type="button"
+                        onClick={() => handleEditBook(book.id)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
+
                   <div>
                     <button
                       className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
@@ -199,7 +221,7 @@ export default function AddBook() {
                     >
                       Edit
                     </button>
-                  </div>
+
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
@@ -215,15 +237,15 @@ export default function AddBook() {
               </div>
             ))}
           </div>
-
-          <button
-            className=""
-            type="button"
-            onClick={() => setShowBookForm(true)}
-          >
-            Add Book
-          </button>
-
+          {isAdmin && (
+            <button
+              className=""
+              type="button"
+              onClick={() => setShowBookForm(true)}
+            >
+              Add Book
+            </button>
+          )}
           {showBookForm && (
             <BookForm
               onSubmit={handleFormSubmit}
