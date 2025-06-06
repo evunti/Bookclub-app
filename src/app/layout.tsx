@@ -1,8 +1,7 @@
 "use client";
 import "./globals.css";
-import { useState, createContext } from "react";
-
-export const AdminContext = createContext(false);
+import { useState, createContext, useContext } from "react";
+import { UserContext, UserProvider } from "./lib/user";
 
 export default function RootLayout({
   children,
@@ -28,53 +27,17 @@ export default function RootLayout({
       setLoginError("Invalid credentials");
     }
   };
-
+  // make log in a seperate page
   const handleLogout = () => {
     setIsAdmin(false);
   };
 
   return (
     <html lang="en">
-      <head>
-        <script
-          crossOrigin="anonymous"
-          src="//unpkg.com/react-scan/dist/auto.global.js"
-        ></script>
-      </head>
       <body>
-        <AdminContext.Provider value={isAdmin}>
-          <nav className="p-2 flex justify-end items-center gap-2 relative">
-            <a className="no-underline font-bold p-2" href="#hero">
-              Home
-            </a>
-            <a className="no-underline font-bold p-2" href="#books">
-              Books
-            </a>
-            {/* <a
-              className="no-underline font-bold p-2"
-              // href="https:/docs.google.com/spreadsheets/d/1kHmzodxrGFzg5kxeySfrx7rixHIJsCOxClitApXHifI/edit?gid=0#gid=0"
-            >
-              Book Recs
-            </a> */}
-            <a className="no-underline font-bold p-2" href="#contact">
-              Contact
-            </a>
-            {isAdmin ? (
-              <button
-                className="no-underline font-bold p-2 bg-white/80 text-black rounded-lg shadow hover:bg-gray-200 border border-gray-300 ml-2 transition-colors"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            ) : (
-              <button
-                className="no-underline font-bold p-2 bg-white/80 text-black rounded-lg shadow hover:bg-gray-200 border border-gray-300 ml-2 transition-colors"
-                onClick={() => setShowLogin(true)}
-              >
-                Login
-              </button>
-            )}
-            {showLogin && (
+        <UserProvider>
+          <NavBar />
+          {/* {showLogin && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
                 <div className="bg-white/95 border rounded-2xl shadow-2xl p-6 min-w-[240px] animate-fade-in relative">
                   <form onSubmit={handleLogin} className="flex flex-col gap-3">
@@ -123,11 +86,50 @@ export default function RootLayout({
                   </button>
                 </div>
               </div>
-            )}
-          </nav>
+            )} */}
           {children}
-        </AdminContext.Provider>
+        </UserProvider>
       </body>
     </html>
+  );
+}
+
+function NavBar() {
+  const { isLoggedIn, handleLogIn } = useContext(UserContext);
+
+  return (
+    <nav className="p-2 flex justify-end items-center gap-2 relative">
+      <a className="no-underline font-bold p-2" href="#hero">
+        Home
+      </a>
+      <a className="no-underline font-bold p-2" href="#books">
+        Books
+      </a>
+      {/* <a
+              className="no-underline font-bold p-2"
+              // href="https:/docs.google.com/spreadsheets/d/1kHmzodxrGFzg5kxeySfrx7rixHIJsCOxClitApXHifI/edit?gid=0#gid=0"
+            >
+              Book Recs
+            </a> */}
+
+      <a className="no-underline font-bold p-2" href="#contact">
+        Contact
+      </a>
+      {isLoggedIn ? (
+        <button
+          className="no-underline font-bold p-2 bg-white/80 text-black rounded-lg shadow hover:bg-gray-200 border border-gray-300 ml-2 transition-colors"
+          // onClick={handleLogout}
+        >
+          Logout
+        </button>
+      ) : (
+        <button
+          className="no-underline font-bold p-2 bg-white/80 text-black rounded-lg shadow hover:bg-gray-200 border border-gray-300 ml-2 transition-colors"
+          onClick={handleLogIn}
+        >
+          Login
+        </button>
+      )}
+    </nav>
   );
 }
