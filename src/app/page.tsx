@@ -15,7 +15,7 @@ interface Book {
   title: string;
   author: string;
   pages: number;
-  // url: string;
+  coverUrl?: string;
 }
 
 const fetchCoverUrl = async (
@@ -79,7 +79,6 @@ export default function AddBook() {
           body: JSON.stringify(newBook),
         });
         if (response.ok) {
-          // Optionally, get the new book from the response
           const saved = await response.json();
           newBook = saved.id ? saved : newBook;
         }
@@ -126,21 +125,32 @@ export default function AddBook() {
   }, []);
 
   useEffect(() => {
-    const fetchAllCovers = async () => {
-      const entries = await Promise.all(
-        books.map(async (book) => {
-          const url = await fetchCoverUrl(book.title, book.author);
-          return [book.id, url] as [string, string | null];
-        })
-      );
-      setCoverUrls(
-        Object.fromEntries(
-          entries.filter(([, url]) => url !== null) as [string, string][]
-        )
-      );
-    };
-    if (books.length > 0) fetchAllCovers();
-  }, [books]);
+    // Find books missing coverUrl
+    const booksMissingCover = books.filter((book) => !book.coverUrl);
+    if (!booksMissingCover.length) return;
+    (async () => {
+      for (const book of booksMissingCover) {
+        const url = await fetchCoverUrl(book.title, book.author);
+        if (url) {
+          try {
+            await fetch(`http://localhost:8000/${book.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ...book, coverUrl: url }),
+            });
+          } catch (error) {
+            console.error("Failed to update book with coverUrl", error);
+          }
+        }
+      }
+      fetchBooks();
+    })();
+  }, [
+    books
+      .filter((book) => !book.coverUrl)
+      .map((book) => book.id)
+      .join(","),
+  ]);
 
   return (
     <div>
@@ -176,6 +186,7 @@ export default function AddBook() {
                   <span className="text-xs text-gray-500">
                     {book.pages} pages
                   </span>
+
                   {isAdmin && (
                     <div>
                       <button
@@ -195,11 +206,33 @@ export default function AddBook() {
                       </button>
                     </div>
                   )}
+
+                  <div>
+                    <button
+                      className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
+                      type="button"
+                      onClick={() => handleDeleteBook(book.id)}
+                    >
+                      Delete
+                    </button>
+                    <span className="inline-block w-1"></span>
+                    <button
+                      className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
+                      type="button"
+                      onClick={() => handleEditBook(book.id)}
+                    >
+                      Edit
+                    </button>
+
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
                     className="object-contain w-full h-full "
-                    src={coverUrls[book.id] || "/images/placeholder.jpg"}
+                    src={
+                      book.coverUrl ||
+                      coverUrls[book.id] ||
+                      "/images/placeholder.jpg"
+                    }
                     alt={book.title}
                   />
                 </div>
