@@ -223,7 +223,7 @@ export default function AddBook() {
                     >
                       Edit
                     </button>
-
+                  </div>
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
