@@ -1,10 +1,13 @@
 import { createContext, useState } from "react";
 
+// Update context to accept user info and id
 export const UserContext = createContext({
+  id: null as number | null,
+  username: "",
   email: "",
   isAdmin: false,
   isLoggedIn: false,
-  handleLogIn: () => {},
+  handleLogIn: (_user: any) => {},
   handleLogout: () => {},
 });
 
@@ -13,16 +16,29 @@ export function UserProvider({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [id, setId] = useState<number | null>(null);
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogIn = () => {
+  // Accept user object from backend
+  const handleLogIn = (user: {
+    id: number;
+    username: string;
+    isAdmin: boolean;
+    email?: string;
+  }) => {
+    setId(user.id);
+    setUsername(user.username);
+    setIsAdmin(!!user.isAdmin);
+    setEmail(user.email || "");
     setIsLoggedIn(true);
-    setIsAdmin(true);
   };
 
   const handleLogout = () => {
+    setId(null);
+    setUsername("");
     setIsLoggedIn(false);
     setIsAdmin(false);
     setEmail("");
@@ -31,9 +47,11 @@ export function UserProvider({
   return (
     <UserContext.Provider
       value={{
-        isAdmin: isAdmin,
-        email: email,
-        isLoggedIn: isLoggedIn,
+        id,
+        username,
+        email,
+        isAdmin,
+        isLoggedIn,
         handleLogIn,
         handleLogout,
       }}

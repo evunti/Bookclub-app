@@ -6,17 +6,35 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginUsername === "admin" && loginPassword === "password") {
-      handleLogIn();
-      setLoginError("");
-      setLoginUsername("");
-      setLoginPassword("");
-      if (onSuccess) onSuccess();
-    } else {
-      setLoginError("Invalid credentials");
+    setLoading(true);
+    setLoginError("");
+    try {
+      const res = await fetch("http://localhost:3001/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: loginUsername,
+          password: loginPassword,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        handleLogIn(data); // Pass backend user info to context
+        setLoginError("");
+        setLoginUsername("");
+        setLoginPassword("");
+        if (onSuccess) onSuccess();
+      } else {
+        setLoginError(data.error || "Login failed");
+      }
+    } catch (err) {
+      setLoginError("Network error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,8 +66,9 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <button
           type="submit"
           className="font-bold px-6 py-2 rounded-full bg-blue-200 text-black hover:bg-blue-300 border border-blue-200 shadow-sm transition-all duration-150 text-lg"
+          disabled={loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </div>
       <div className="flex flex-col items-center mt-4">
