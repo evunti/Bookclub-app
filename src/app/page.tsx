@@ -207,7 +207,7 @@ export default function AddBook() {
                     </div>
                   )}
 
-                  <div>
+                  {/* <div>
                     <button
                       className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
                       type="button"
@@ -223,7 +223,7 @@ export default function AddBook() {
                     >
                       Edit
                     </button>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img

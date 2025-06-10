@@ -5,6 +5,7 @@ export const UserContext = createContext({
   isAdmin: false,
   isLoggedIn: false,
   handleLogIn: () => {},
+  handleLogout: () => {},
 });
 
 export function UserProvider({
@@ -21,6 +22,12 @@ export function UserProvider({
     setIsAdmin(true);
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    setEmail("");
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -28,6 +35,7 @@ export function UserProvider({
         email: email,
         isLoggedIn: isLoggedIn,
         handleLogIn,
+        handleLogout,
       }}
     >
       {children}
