@@ -8,7 +8,7 @@ import { addBookItem, updateBookItem, deleteBookItem } from "./itemsSlice";
 import { v4 as uuidv4 } from "uuid";
 
 import BookForm from "./components/form";
-import { AdminContext } from "./layout";
+import { UserContext } from "./lib/user";
 
 interface Book {
   id: string;
@@ -50,7 +50,7 @@ export default function AddBook() {
   const [editBook, setEditBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
   const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
-  const isAdmin = useContext(AdminContext);
+  const { isAdmin, handleLogIn } = useContext(UserContext);
 
   const handleFormSubmit = async (data: Omit<Book, "id">) => {
     if (editBook) {
@@ -157,6 +157,8 @@ export default function AddBook() {
       <div>
         <title>Book Club</title>
       </div>
+      <button onClick={handleLogIn}>login</button>
+
       <div>
         <div
           id="hero"
@@ -205,7 +207,7 @@ export default function AddBook() {
                     </div>
                   )}
 
-                  <div>
+                  {/* <div>
                     <button
                       className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
                       type="button"
@@ -221,7 +223,7 @@ export default function AddBook() {
                     >
                       Edit
                     </button>
-
+                  </div> */}
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
