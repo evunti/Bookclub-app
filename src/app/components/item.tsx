@@ -2,7 +2,7 @@ import { useState } from "react";
 import BookForm from "./form";
 
 interface Book {
-  id: number;
+  id: string;
   title: string;
   author: string;
   pages: number;

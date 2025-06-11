@@ -40,13 +40,14 @@ function CreateBookItem() {
   const dispatch = useDispatch<AppDispatch>();
   const BookItmes = useSelector((state: RootState) => state.items.allBookItems);
 
-  const handleDeleteBook = (index: number) => {
-    dispatch(deleteBookItem(index));
+  const handleDeleteBook = (id: string) => {
+    dispatch(deleteBookItem(id));
   };
 }
 
 export default function AddBook() {
-  const [books, setBooks] = useState<Book[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const books = useSelector((state: RootState) => state.items.allBookItems);
   const [editBook, setEditBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
   const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
@@ -60,17 +61,12 @@ export default function AddBook() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data }),
         });
+        dispatch(updateBookItem({ id: editBook.id, data }));
       } catch (error) {
         console.error("Failed to update book in DB", error);
       }
-      setBooks((prevBooks) =>
-        prevBooks.map((book) =>
-          book.id === editBook.id ? { ...book, ...data } : book
-        )
-      );
       setEditBook(null);
     } else {
-      // Add to DB
       let newBook: Book = { id: uuidv4(), ...data };
       try {
         const response = await fetch("http://localhost:8000/", {
@@ -82,10 +78,10 @@ export default function AddBook() {
           const saved = await response.json();
           newBook = saved.id ? saved : newBook;
         }
+        dispatch(addBookItem(newBook));
       } catch (error) {
         console.error("Failed to add book to DB", error);
       }
-      setBooks((prevBooks) => [...prevBooks, newBook]);
     }
     setShowBookForm(false);
   };
@@ -95,7 +91,7 @@ export default function AddBook() {
   };
 
   const handleDeleteBook = async (id: string) => {
-    setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+    dispatch(deleteBookItem(id));
     try {
       await fetch(`http://localhost:8000/${id}`, {
         method: "DELETE",
@@ -116,7 +112,9 @@ export default function AddBook() {
   const fetchBooks = () => {
     fetch("http://localhost:8000/")
       .then((response) => response.json())
-      .then((data) => setBooks(data))
+      .then((data) => {
+        dispatch({ type: "books/setBookItems", payload: data });
+      })
       .catch((error) => console.error(error));
   };
 
@@ -129,6 +127,7 @@ export default function AddBook() {
     const booksMissingCover = books.filter((book) => !book.coverUrl);
     if (!booksMissingCover.length) return;
     (async () => {
+      let updated = false;
       for (const book of booksMissingCover) {
         const url = await fetchCoverUrl(book.title, book.author);
         if (url) {
@@ -138,12 +137,14 @@ export default function AddBook() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ ...book, coverUrl: url }),
             });
+            dispatch(updateBookItem({ id: book.id, data: { coverUrl: url } }));
+            updated = true;
           } catch (error) {
             console.error("Failed to update book with coverUrl", error);
           }
         }
       }
-      fetchBooks();
+      if (updated) fetchBooks();
     })();
   }, [
     books
