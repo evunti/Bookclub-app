@@ -1,6 +1,6 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
 import { Provider } from "react-redux";
+import { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "./store";
 import store from "./store";
@@ -36,17 +36,27 @@ const fetchCoverUrl = async (
   }
 };
 
+// Keep CreateBookItem for later use, but do not use it in the current render
 function CreateBookItem() {
   const dispatch = useDispatch<AppDispatch>();
   const BookItmes = useSelector((state: RootState) => state.items.allBookItems);
 
-  const handleDeleteBook = (index: number) => {
-    dispatch(deleteBookItem(index));
+  const handleDeleteBook = (id: string) => {
+    dispatch(deleteBookItem(id));
   };
 }
 
 export default function AddBook() {
-  const [books, setBooks] = useState<Book[]>([]);
+  return (
+    <Provider store={store}>
+      <AddBookContent />
+    </Provider>
+  );
+}
+
+function AddBookContent() {
+  const dispatch = useDispatch<AppDispatch>();
+  const books = useSelector((state: RootState) => state.items.allBookItems);
   const [editBook, setEditBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
   const [coverUrls, setCoverUrls] = useState<{ [id: string]: string }>({});
@@ -60,18 +70,20 @@ export default function AddBook() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data }),
         });
+        dispatch(updateBookItem({ id: editBook.id, data }));
       } catch (error) {
         console.error("Failed to update book in DB", error);
       }
-      setBooks((prevBooks) =>
-        prevBooks.map((book) =>
-          book.id === editBook.id ? { ...book, ...data } : book
-        )
-      );
       setEditBook(null);
     } else {
-      // Add to DB
-      let newBook: Book = { id: uuidv4(), ...data };
+      // Fetch coverUrl before adding new book
+      let coverUrl: string | undefined = undefined;
+      try {
+        coverUrl = (await fetchCoverUrl(data.title, data.author)) || undefined;
+      } catch (error) {
+        console.error("Failed to fetch coverUrl", error);
+      }
+      let newBook: Book = { id: uuidv4(), ...data, coverUrl };
       try {
         const response = await fetch("http://localhost:8000/", {
           method: "POST",
@@ -82,10 +94,10 @@ export default function AddBook() {
           const saved = await response.json();
           newBook = saved.id ? saved : newBook;
         }
+        dispatch(addBookItem(newBook));
       } catch (error) {
         console.error("Failed to add book to DB", error);
       }
-      setBooks((prevBooks) => [...prevBooks, newBook]);
     }
     setShowBookForm(false);
   };
@@ -95,7 +107,7 @@ export default function AddBook() {
   };
 
   const handleDeleteBook = async (id: string) => {
-    setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+    dispatch(deleteBookItem(id));
     try {
       await fetch(`http://localhost:8000/${id}`, {
         method: "DELETE",
@@ -116,7 +128,9 @@ export default function AddBook() {
   const fetchBooks = () => {
     fetch("http://localhost:8000/")
       .then((response) => response.json())
-      .then((data) => setBooks(data))
+      .then((data) => {
+        dispatch({ type: "books/setBookItems", payload: data });
+      })
       .catch((error) => console.error(error));
   };
 
@@ -124,41 +138,12 @@ export default function AddBook() {
     fetchBooks();
   }, []);
 
-  useEffect(() => {
-    // Find books missing coverUrl
-    const booksMissingCover = books.filter((book) => !book.coverUrl);
-    if (!booksMissingCover.length) return;
-    (async () => {
-      for (const book of booksMissingCover) {
-        const url = await fetchCoverUrl(book.title, book.author);
-        if (url) {
-          try {
-            await fetch(`http://localhost:8000/${book.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ...book, coverUrl: url }),
-            });
-          } catch (error) {
-            console.error("Failed to update book with coverUrl", error);
-          }
-        }
-      }
-      fetchBooks();
-    })();
-  }, [
-    books
-      .filter((book) => !book.coverUrl)
-      .map((book) => book.id)
-      .join(","),
-  ]);
-
   return (
     <div>
       <div>
         <title>Book Club</title>
       </div>
       <button onClick={handleLogIn}>login</button>
-
       <div>
         <div
           id="hero"
@@ -169,7 +154,6 @@ export default function AddBook() {
             <p>We meet monthly.</p>
           </div>
         </div>
-
         <div className="flex flex-col items-center gap-10 mb-20 text-xl mt-20">
           <p> Books We've Read.</p>
           <div className="flex flex-col gap-8 w-full max-w-3xl">
@@ -186,7 +170,6 @@ export default function AddBook() {
                   <span className="text-xs text-gray-500">
                     {book.pages} pages
                   </span>
-
                   {isAdmin && (
                     <div>
                       <button
@@ -206,24 +189,6 @@ export default function AddBook() {
                       </button>
                     </div>
                   )}
-
-                  {/* <div>
-                    <button
-                      className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
-                      type="button"
-                      onClick={() => handleDeleteBook(book.id)}
-                    >
-                      Delete
-                    </button>
-                    <span className="inline-block w-1"></span>
-                    <button
-                      className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
-                      type="button"
-                      onClick={() => handleEditBook(book.id)}
-                    >
-                      Edit
-                    </button>
-                  </div> */}
                 </div>
                 <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
                   <img
@@ -239,15 +204,16 @@ export default function AddBook() {
               </div>
             ))}
           </div>
-          {isAdmin && (
+          {/* Only show the Create Book button, remove Add Book button */}
+          <div className="flex gap-4 mt-4">
             <button
-              className=""
+              className="px-4 py-2 border-b-emerald-800  rounded shadow hover:bg-green-100 "
               type="button"
               onClick={() => setShowBookForm(true)}
             >
               Add Book
             </button>
-          )}
+          </div>
           {showBookForm && (
             <BookForm
               onSubmit={handleFormSubmit}
