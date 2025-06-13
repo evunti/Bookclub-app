@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 interface Book {
-  id: number;
+  id: string;
   title: string;
   author: string;
   pages: number;
@@ -25,7 +25,7 @@ export default function BookForm({
     if (initialData) {
       setTitle(initialData.title);
       setAuthor(initialData.author || "");
-      setPages(initialData.pages || Number);
+      setPages(initialData.pages ?? 0); // fix: use nullish coalescing for default
     }
   }, [initialData]);
 
