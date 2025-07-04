@@ -23,17 +23,29 @@ export default function UserForm({
   const [email, setEmail] = useState(initialData?.email || "");
   const [password, setPassword] = useState(initialData?.password || "");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
     try {
-      // You can add API call here if needed
-      onSubmit({ username, email, password });
+      const res = await fetch("http://localhost:8000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSuccess("Registration successful! You can now log in.");
+        onSubmit({ username, email, password });
+      } else {
+        setError(data.error || "Registration failed");
+      }
     } catch (err) {
-      setError("Failed to register");
+      setError("Network error");
     } finally {
       setLoading(false);
     }
@@ -71,6 +83,9 @@ export default function UserForm({
       />
       {error && (
         <span className="text-red-500 text-sm text-center">{error}</span>
+      )}
+      {success && (
+        <span className="text-green-600 text-sm text-center">{success}</span>
       )}
       <div className="flex gap-2 justify-end mt-2">
         <button
