@@ -7,7 +7,8 @@ export const UserContext = createContext({
   email: "",
   isAdmin: false,
   isLoggedIn: false,
-  handleLogIn: (_user: any) => {},
+  token: "", // Add token to context
+  handleLogIn: (_user: any, _token: string) => {},
   handleLogout: () => {},
 });
 
@@ -21,19 +22,24 @@ export function UserProvider({
   const [email, setEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(""); // Add token state
 
-  // Accept user object from backend
-  const handleLogIn = (user: {
-    id: number;
-    username: string;
-    isAdmin: boolean;
-    email?: string;
-  }) => {
+  // Accept user object and token from backend
+  const handleLogIn = (
+    user: {
+      id: number;
+      username: string;
+      isAdmin: boolean;
+      email?: string;
+    },
+    token: string
+  ) => {
     setId(user.id);
     setUsername(user.username);
     setIsAdmin(!!user.isAdmin);
     setEmail(user.email || "");
     setIsLoggedIn(true);
+    setToken(token); // Store token
   };
 
   const handleLogout = () => {
@@ -42,6 +48,7 @@ export function UserProvider({
     setIsLoggedIn(false);
     setIsAdmin(false);
     setEmail("");
+    setToken(""); // Clear token
   };
 
   return (
@@ -52,6 +59,7 @@ export function UserProvider({
         email,
         isAdmin,
         isLoggedIn,
+        token, // Provide token
         handleLogIn,
         handleLogout,
       }}

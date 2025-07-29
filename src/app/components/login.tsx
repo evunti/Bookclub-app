@@ -30,7 +30,7 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
       });
       const data = await res.json();
       if (res.ok) {
-        handleLogIn(data); // Pass backend user info to context
+        handleLogIn(data, data.token); // Pass backend user info and token to context
         setSuccess("Login successful!");
         setError("");
         setLoginUsername("");
