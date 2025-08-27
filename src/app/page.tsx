@@ -36,7 +36,6 @@ const fetchCoverUrl = async (
   }
 };
 
-// Keep CreateBookItem for later use, but do not use it in the current render
 function CreateBookItem() {
   const dispatch = useDispatch<AppDispatch>();
   const BookItmes = useSelector((state: RootState) => state.items.allBookItems);
@@ -143,7 +142,6 @@ function AddBookContent() {
       <div>
         <title>Book Club</title>
       </div>
-      <button onClick={handleLogIn}>login</button>
       <div>
         <div
           id="hero"
