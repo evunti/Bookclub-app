@@ -25,7 +25,7 @@ export default function BookForm({
     if (initialData) {
       setTitle(initialData.title);
       setAuthor(initialData.author || "");
-      setPages(initialData.pages ?? 0); // fix: use nullish coalescing for default
+      setPages(initialData.pages ?? 0);
     }
   }, [initialData]);
 
