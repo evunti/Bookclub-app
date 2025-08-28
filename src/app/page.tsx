@@ -202,16 +202,18 @@ function AddBookContent() {
               </div>
             ))}
           </div>
-          {/* Only show the Create Book button, remove Add Book button */}
-          <div className="flex gap-4 mt-4">
-            <button
-              className="px-4 py-2 border-b-emerald-800  rounded shadow hover:bg-green-100 "
-              type="button"
-              onClick={() => setShowBookForm(true)}
-            >
-              Add Book
-            </button>
-          </div>
+
+          {isAdmin && (
+            <div className="flex gap-4 mt-4">
+              <button
+                className="px-4 py-2 border-b-emerald-800  rounded shadow hover:bg-green-100 "
+                type="button"
+                onClick={() => setShowBookForm(true)}
+              >
+                Add Book
+              </button>
+            </div>
+          )}
           {showBookForm && (
             <BookForm
               onSubmit={handleFormSubmit}
