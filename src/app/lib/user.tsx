@@ -1,13 +1,12 @@
 import { createContext, useState } from "react";
 
-// Update context to accept user info and id
 export const UserContext = createContext({
   id: null as number | null,
   username: "",
   email: "",
   isAdmin: false,
   isLoggedIn: false,
-  token: "", // Add token to context
+  token: "",
   handleLogIn: (_user: any, _token: string) => {},
   handleLogout: () => {},
 });
@@ -22,9 +21,8 @@ export function UserProvider({
   const [email, setEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [token, setToken] = useState(""); // Add token state
+  const [token, setToken] = useState("");
 
-  // Accept user object and token from backend
   const handleLogIn = (
     user: {
       id: number;
@@ -39,7 +37,7 @@ export function UserProvider({
     setIsAdmin(!!user.isAdmin);
     setEmail(user.email || "");
     setIsLoggedIn(true);
-    setToken(token); // Store token
+    setToken(token);
   };
 
   const handleLogout = () => {
@@ -48,7 +46,7 @@ export function UserProvider({
     setIsLoggedIn(false);
     setIsAdmin(false);
     setEmail("");
-    setToken(""); // Clear token
+    setToken("");
   };
 
   return (
@@ -59,7 +57,7 @@ export function UserProvider({
         email,
         isAdmin,
         isLoggedIn,
-        token, // Provide token
+        token,
         handleLogIn,
         handleLogout,
       }}
