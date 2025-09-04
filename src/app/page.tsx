@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import BookForm from "./components/form";
 import { UserContext } from "./lib/user";
+import CardWithEdit from "./components/cardwithedit";
 
 interface Book {
   id: string;
@@ -75,14 +76,14 @@ function AddBookContent() {
       }
       setEditBook(null);
     } else {
-      // Fetch coverUrl before adding new book
+      // Adding a new book
       let coverUrl: string | undefined = undefined;
       try {
         coverUrl = (await fetchCoverUrl(data.title, data.author)) || undefined;
       } catch (error) {
         console.error("Failed to fetch coverUrl", error);
       }
-      let newBook: Book = { id: uuidv4(), ...data, coverUrl };
+      const newBook: Book = { id: uuidv4(), ...data, coverUrl };
       try {
         const response = await fetch("http://localhost:8000/", {
           method: "POST",
@@ -91,14 +92,18 @@ function AddBookContent() {
         });
         if (response.ok) {
           const saved = await response.json();
-          newBook = saved.id ? saved : newBook;
+          dispatch(addBookItem(saved.id ? saved : newBook));
+        } else {
+          dispatch(addBookItem(newBook));
         }
-        dispatch(addBookItem(newBook));
       } catch (error) {
         console.error("Failed to add book to DB", error);
+        dispatch(addBookItem(newBook));
       }
+      setShowBookForm(false);
+      setEditBook(null);
+      fetchBooks(); // Refresh list after adding
     }
-    setShowBookForm(false);
   };
 
   const handleCancelForm = () => {
@@ -154,73 +159,91 @@ function AddBookContent() {
         </div>
         <div className="flex flex-col items-center gap-10 mb-20 text-xl mt-20">
           <p> Books We've Read.</p>
-          <div className="flex flex-col gap-8 w-full max-w-3xl">
-            {books.map((book, id) => (
-              <div
-                key={book.id}
-                className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-4"
-              >
-                <div className="flex flex-col">
-                  <span className="font-semibold">{book.title}</span>
-                  <span className="text-sm text-gray-600">
-                    by {book.author}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {book.pages} pages
-                  </span>
-                  {isAdmin && (
-                    <div>
-                      <button
-                        className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
-                        type="button"
-                        onClick={() => handleDeleteBook(book.id)}
-                      >
-                        Delete
-                      </button>
-                      <span className="inline-block w-1"></span>
-                      <button
-                        className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
-                        type="button"
-                        onClick={() => handleEditBook(book.id)}
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
-                  <img
-                    className="object-contain w-full h-full "
-                    src={
-                      book.coverUrl ||
-                      coverUrls[book.id] ||
-                      "/images/placeholder.jpg"
-                    }
-                    alt={book.title}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
           {isAdmin && (
-            <div className="flex gap-4 mt-4">
+            <div className="flex gap-4 mb-4">
               <button
-                className="px-4 py-2 border-b-emerald-800  rounded shadow hover:bg-green-100 "
+                className="px-4 py-2 border-b-emerald-800 rounded shadow hover:bg-green-100"
                 type="button"
-                onClick={() => setShowBookForm(true)}
+                onClick={() => {
+                  setShowBookForm(true);
+                  setEditBook(null);
+                }}
               >
                 Add Book
               </button>
             </div>
           )}
-          {showBookForm && (
-            <BookForm
-              onSubmit={handleFormSubmit}
-              onCancel={handleCancelForm}
-              initialData={editBook}
-            />
-          )}
+          <div className="flex flex-col gap-8 w-full max-w-3xl">
+            {/* Only show add form if showBookForm is true and not editing */}
+            {showBookForm && isAdmin && !editBook && (
+              <CardWithEdit
+                key="new-book"
+                book={{ id: "", title: "", author: "", pages: 0, coverUrl: "" }}
+                onSubmit={handleFormSubmit}
+                onCancel={() => setShowBookForm(false)}
+              />
+            )}
+            {books.map((book, id) =>
+              editBook && editBook.id === book.id ? (
+                <CardWithEdit
+                  key={book.id}
+                  book={editBook}
+                  onSubmit={handleFormSubmit}
+                  onCancel={() => {
+                    setEditBook(null);
+                    setShowBookForm(false);
+                  }}
+                />
+              ) : (
+                <div
+                  key={book.id}
+                  className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-4"
+                >
+                  <div className="flex flex-col">
+                    <span className="font-semibold">{book.title}</span>
+                    <span className="text-sm text-gray-600">
+                      by {book.author}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {book.pages} pages
+                    </span>
+                    {isAdmin && (
+                      <div>
+                        <button
+                          className="mt-2 px-2 py-1 bg-red-500 text-black rounded hover:bg-red-600 text-xs w-fit"
+                          type="button"
+                          onClick={() => handleDeleteBook(book.id)}
+                        >
+                          Delete
+                        </button>
+                        <span className="inline-block w-1"></span>
+                        <button
+                          className="mt-2 px-2 py-1 bg-gray-400 text-black rounded hover:bg-gray-600 text-xs w-fit"
+                          type="button"
+                          onClick={() => handleEditBook(book.id)}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-22 h-30 flex items-center justify-center bg-black rounded-md">
+                    <img
+                      className="object-contain w-full h-full "
+                      src={
+                        book.coverUrl ||
+                        coverUrls[book.id] ||
+                        "/images/placeholder.jpg"
+                      }
+                      alt={book.title}
+                    />
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Remove BookForm popup at the bottom */}
         </div>
         <div className="flex flex-col items-center">
           <p id="contact"> Contact Us</p>
