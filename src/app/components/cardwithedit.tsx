@@ -27,7 +27,7 @@ const fetchCoverUrl = async (
     if (!response.ok) return null;
     const data = await response.json();
     return data.url || null;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -43,15 +43,13 @@ export default function CardWithEdit({
   const [coverUrl, setCoverUrl] = useState(book.coverUrl || "");
 
   useEffect(() => {
-    async function updateCover() {
-      if (editedTitle && editedAuthor) {
-        const url = await fetchCoverUrl(editedTitle, editedAuthor);
-        setCoverUrl(url || "");
-      } else {
-        setCoverUrl("");
-      }
+    if (editedTitle && editedAuthor) {
+      fetchCoverUrl(editedTitle, editedAuthor).then((url) =>
+        setCoverUrl(url || "")
+      );
+    } else {
+      setCoverUrl("");
     }
-    updateCover();
   }, [editedTitle, editedAuthor]);
 
   const handleSave = () => {
