@@ -27,10 +27,6 @@ export default function BookItem({
 }: BookItemProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
-
   return (
     <div className="ItemContainer">
       {isEditing ? (
@@ -48,7 +44,9 @@ export default function BookItem({
           <div>
             <h3>{book.title}</h3>
             <div>
-              <button onClick={toggleDropdown}>...</button>
+              <button onClick={() => setDropdownVisible(!dropdownVisible)}>
+                ...
+              </button>
               <div
                 className={`dropdownContent ${
                   dropdownVisible ? "visible" : ""

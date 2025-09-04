@@ -24,35 +24,29 @@ export default function User({
   isEditing,
   onSubmit,
   onCancel,
-  children,
-}: UserProps & { children?: React.ReactNode }) {
+}: UserProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
 
   return (
     <div className="UserContainer">
       {isEditing ? (
-        <>
-          {children}
-          <UserForm
-            onSubmit={onSubmit}
-            onCancel={onCancel}
-            initialData={{
-              username: user.username,
-              email: user.email,
-              password: user.password,
-            }}
-          />
-        </>
+        <UserForm
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+          initialData={{
+            username: user.username,
+            email: user.email,
+            password: user.password,
+          }}
+        />
       ) : (
         <div>
           <div>
             <h3>{user.username}</h3>
             <div>
-              <button onClick={toggleDropdown}>...</button>
+              <button onClick={() => setDropdownVisible(!dropdownVisible)}>
+                ...
+              </button>
               <div
                 className={`dropdownContent ${
                   dropdownVisible ? "visible" : ""

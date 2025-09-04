@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Book {
   id: string;
@@ -6,7 +6,8 @@ interface Book {
   author: string;
   pages: number;
 }
-type TaskFormProps = {
+
+type BookFormProps = {
   onSubmit: (data: Omit<Book, "id">) => void;
   onCancel: () => void;
   initialData?: Omit<Book, "id"> | null;
@@ -16,24 +17,16 @@ export default function BookForm({
   onSubmit,
   onCancel,
   initialData,
-}: TaskFormProps) {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [pages, setPages] = useState<number>(0);
-
-  useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title);
-      setAuthor(initialData.author || "");
-      setPages(initialData.pages ?? 0);
-    }
-  }, [initialData]);
+}: BookFormProps) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [author, setAuthor] = useState(initialData?.author || "");
+  const [pages, setPages] = useState<number>(initialData?.pages ?? 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = { title, author, pages };
-    onSubmit(formData);
+    onSubmit({ title, author, pages });
   };
+
   return (
     <div className="flex flex-row items-center justify-between bg-white/80 rounded-lg shadow p-2 w-full max-w-md">
       <form
